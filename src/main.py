@@ -428,12 +428,22 @@ def create_visualizations(df):
     
     # 3. Avoidance behavior
     avoidance_col = "Have you ever decided not to use a restroom because of the stall door? If so, why?"
+
     if avoidance_col in df.columns:
         avoidance_responses = df[avoidance_col].dropna().str.lower()
-        
-        yes_avoid = sum(1 for r in avoidance_responses if 'yes' in r)
-        no_avoid = sum(1 for r in avoidance_responses if 'no' in r)
-        
+
+        yes_keywords = ['yes', 'yea', 'yeah', 'because', 'only', "didn't use", "not close", "could not"]
+        no_keywords  = ['no', 'not really']
+
+        yes_avoid = 0
+        no_avoid  = 0
+
+        for r in avoidance_responses:
+            if any(keyword in r for keyword in yes_keywords):
+                yes_avoid += 1
+            elif any(keyword in r for keyword in no_keywords):
+                no_avoid += 1
+
         axes[0, 2].bar(['Yes', 'No'], [yes_avoid, no_avoid], color=['red', 'green'], alpha=0.7)
         axes[0, 2].set_title('Have You Avoided Restrooms Due to Door Issues?')
         axes[0, 2].set_ylabel('Number of Responses')
